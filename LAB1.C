@@ -39,8 +39,8 @@ void main(void) {
 int z ;
 conf();
 while (1){
-    if (PORTDbits.RD5 == 1)   //Revisa el boton de inicio y si este tiene un 1 procedera hacer el conteo regresivo del display
-        { PORTC = 0b00000110;
+    if (PORTDbits.RD5 == 1)   //Revisa el boton de inicio y si este tiene un 1 procedera hacer el conteo regresivo del display tambien es la función semaforo 
+        { PORTC = 0b00000110; // aqui hacemos las distribuciones para poder observar observar el conteo regresivo
         PORTEbits.RE0 = 1;
         PORTEbits.RE1 = 0;
         PORTEbits.RE2 = 0;
@@ -62,16 +62,43 @@ while (1){
         } else {
         delay(15);
         }
+
+    //en estas dos Rutinas se hace el conteo de la carrera, es decir, los dos botones donde los jugadores presionaran para aumentar su contador. 
     if (PORTDbits.RD7==1){
+    
         PORTA = PORTA * 2 ;
-       
+        if (PORTA==0b10000000){
+        PORTA = 0b00000001;
+        PORTC = 0b01001111;
+        PORTDbits.RD0 = 1;
+        PORTDbits.RD1 = 0;
         }
         
         
-    }
-  }
+       
+    }      
+      
+    
+
+    if (PORTDbits.RD6 == 1){
+        PORTB = PORTB * 2 ;
+        if (PORTB == 0b10000000){
+            PORTB = 0b00000001;
+            PORTC = 0b00010010;
+            PORTDbits.RD0 = 0;
+            PORTDbits.RD1 = 1;
+         
+            
+        }
         
-    return;
+    }
+
+  }
+  return; 
+}
+        
+    
+
 
 
 //configuraciones iniciales 
@@ -82,7 +109,7 @@ void conf (void){
     PORTC  = 0;
     PORTD  = 0;
     PORTA  = 0x1;
-    PORTB  = 0;
+    PORTB  = 0x1;
     PORTE  = 0;
     TRISA  = 0;
     TRISB  = 0;
@@ -91,6 +118,8 @@ void conf (void){
     TRISDbits.TRISD7 = 1;
     TRISDbits.TRISD6 = 1;
     TRISDbits.TRISD5 = 1;
+    TRISDbits.TRISD0 = 0;
+    TRISDbits.TRISD1 = 0;
     PORTDbits.RD3 = 1;
   }
 
@@ -99,4 +128,3 @@ void delay (unsigned int ms){
         for(int j = 0; j<255; j++);
     }
 }
-
