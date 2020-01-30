@@ -34,72 +34,66 @@
 #define _XTAL_FREQ 8000000
 void conf (void);
 void delay (unsigned int ms);
+void iniciando (void);
+void antirebote1 (void);
+void antirebote2 (void);
+
+
+
 
 void main(void) {
-int z ;
 conf();
-while (1){
-    if (PORTDbits.RD5 == 1)   //Revisa el boton de inicio y si este tiene un 1 procedera hacer el conteo regresivo del display tambien es la función semaforo 
-        { PORTC = 0b00000110; // aqui hacemos las distribuciones para poder observar observar el conteo regresivo
-        PORTEbits.RE0 = 1;
-        PORTEbits.RE1 = 0;
-        PORTEbits.RE2 = 0;
-        delay(50);
-        PORTC  = 0b00010010;
-        PORTEbits.RE0 = 0;
-        PORTEbits.RE1 = 1;
-        PORTEbits.RE2 = 0;
-        delay(50);
-        PORTC  = 0b01001111;
-        PORTEbits.RE0 = 0;
-        PORTEbits.RE1 = 0;
-        PORTEbits.RE2 = 1;
-        delay(50);
-        PORTC  = 0b00000000;
-        PORTEbits.RE0 = 0;
-        PORTEbits.RE1 = 0;
-        PORTEbits.RE2 = 0;    
-        } else {
-        delay(15);
+inicio:
+if (PORTDbits.RD5 == 1){
+    iniciando();
+    while (1){
+        if (PORTDbits.RD7==1){
+            antirebote1();
+        }
+        
+        if (PORTDbits.RD6==1){
+            antirebote2();
+        }
+        
+        if (PORTDbits.RD5 == 1){
+            goto inicio;}
+           
         }
 
-    //en estas dos Rutinas se hace el conteo de la carrera, es decir, los dos botones donde los jugadores presionaran para aumentar su contador. 
-    if (PORTDbits.RD7==1){
-    
-        PORTA = PORTA * 2 ;
-        if (PORTA==0b10000000){
-        PORTA = 0b00000001;
-        PORTC = 0b01001111;
-        PORTDbits.RD0 = 1;
-        PORTDbits.RD1 = 0;
-        }
-        
-        
-       
-    }      
-      
-    
 
-    if (PORTDbits.RD6 == 1){
-        PORTB = PORTB * 2 ;
-        if (PORTB == 0b10000000){
-            PORTB = 0b00000001;
-            PORTC = 0b00010010;
-            PORTDbits.RD0 = 0;
-            PORTDbits.RD1 = 1;
-         
-            
-        }
-        
+
     }
-
-  }
-  return; 
+return; 
 }
-        
     
 
+   
+    
+    
 
+void iniciando (void){
+    PORTC = 0b00000110; // aqui hacemos las distribuciones para poder observar observar el conteo regresivo
+    PORTEbits.RE0 = 1;
+    PORTEbits.RE1 = 0;
+    PORTEbits.RE2 = 0;
+    delay(50);
+    PORTC  = 0b00010010;
+    PORTEbits.RE0 = 0;
+    PORTEbits.RE1 = 1;
+    PORTEbits.RE2 = 0;
+    delay(50);
+    PORTC  = 0b01001111;
+    PORTEbits.RE0 = 0;
+    PORTEbits.RE1 = 0;
+    PORTEbits.RE2 = 1;
+    delay(50);
+    PORTC  = 0b00000000;
+    PORTEbits.RE0 = 0;
+    PORTEbits.RE1 = 0;
+    PORTEbits.RE2 = 0;   
+    PORTDbits.RD0 = 0;
+    PORTDbits.RD1 = 0;
+}
 
 //configuraciones iniciales 
 void conf (void){
@@ -121,10 +115,48 @@ void conf (void){
     TRISDbits.TRISD0 = 0;
     TRISDbits.TRISD1 = 0;
     PORTDbits.RD3 = 1;
+  
   }
 
 void delay (unsigned int ms){
     for(int i = 0; i<ms; i++){
         for(int j = 0; j<255; j++);
+    }
+}
+
+void antirebote1 (void){
+    if (PORTDbits.RD7 == 0){
+           PORTA = PORTA*2;
+            if (PORTA ==0b10000000){
+                PORTA = 0b00000001;
+                PORTC = 0b01001111;
+                PORTDbits.RD0 = 1;
+                PORTDbits.RD1 = 0;
+                PORTA = 0b00000001;
+                PORTB = 0b00000001;
+                
+             
+                
+            }
+ 
+                
+            }
+}
+
+void antirebote2 (void){
+    if (PORTDbits.RD6==0){
+        PORTB = PORTB * 2 ;
+        if (PORTB == 0b10000000){
+            PORTB = 0b00000001;
+            PORTC = 0b00010010;
+            PORTDbits.RD0 = 0;
+            PORTDbits.RD1 = 1;
+            PORTA = 0b00000001;
+            PORTB = 0b00000001;
+            
+            
+            
+        
+    }
     }
 }
